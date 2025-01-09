@@ -7,7 +7,7 @@
  * This is alpha software. Use entirely on your own risk.             * 
  **********************************************************************
  
- (C) Thomas Hergenhahn (thomas.hergenhahn@web.de) 2002, 2003.
+ (C) Thomas Hergenhahn (thomas.hergenhahn@web.de) 2002...2013.
 
  This is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by

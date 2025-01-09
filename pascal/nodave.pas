@@ -17,7 +17,7 @@ unit nodave;
    IBH/MHJ-NetLink or CPs 243, 343 and 443
    or VIPA Speed7 with builtin ethernet support.
 
-   (C) Thomas Hergenhahn (thomas.hergenhahn@web.de) 2002..2005
+   (C) Thomas Hergenhahn (thomas.hergenhahn@web.de) 2002..2013
 
    Libnodave is free software; you can redistribute it and/or modify
    it under the terms of the GNU Library General Public License as published by

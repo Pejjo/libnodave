@@ -13,9 +13,11 @@
 # To test with g++ which does stricter type checking:
 #
 ##CC=g++ 
-CFLAGS=-m64 -Wall -Winline -DLINUX -DDAVE_LITTLE_ENDIAN -fPIC
-CTFLAGS=-m64 -Wall -Winline -fPID -DLINUX -DDAVE_LITTLE_ENDIAN -fPIC
-CPPFLAGS=-m64 -Wall -Winline -DLINUX -DDAVE_LITTLE_ENDIAN -fPIC
+CFLAGS=-Wall -Winline -DLINUX -DDAVE_LITTLE_ENDIAN 
+CTFLAGS=-Wall -Winline -fPID -DLINUX -DDAVE_LITTLE_ENDIAN
+CPPFLAGS=-Wall -Winline -DLINUX -DDAVE_LITTLE_ENDIAN 
+#LDFLAGS+=-L/home/pi/atle/rrr/src/lib
+
 #
 # The following is needed to enable workarounds for statements that do
 # not work on (some?) ARM processors:
@@ -24,14 +26,18 @@ CPPFLAGS=-m64 -Wall -Winline -DLINUX -DDAVE_LITTLE_ENDIAN -fPIC
 #CFLAGS+=-DARM_FIX 
 
 
-#-static -Wl,static -lc.a -static -pthread.a -nostdlib 
+#-static -Wl,static -lc.a -static -lpthread.a -nostdlib 
 #CFLAGS=-O0 -Wall -Winline
-PROGRAMS=testIBH testISO_TCP testMPI testPPI \
-testPPIload testMPIload ibhsim5 \
-isotest4 \
+#
+# modified to compile more important programs first. 5/17/2013
+#
+PROGRAMS=testIBH testISO_TCP testMPI testPPI testPJO\
+testPPIload testMPIload \
 testISO_TCPload testMPI_IBHload testPPI_IBHload testPPI_IBH \
 testNLpro \
-testAS511 
+testAS511 \
+isotest4 \
+ibhsim5
 
 
 
@@ -57,6 +63,8 @@ openSocket.o: openSocket.h nodave.h log2.h
 
 testISO_TCP.o: benchmark.c nodavesimple.h
 testPPI.o: benchmark.c nodavesimple.h
+testPJO.o: benchmark.c nodavesimple.h
+#rrrnod.o: nodavesimple.h
 testPPIcpp.o: benchmark.c nodavesimple.h
 testMPI.o: benchmark.c nodavesimple.h
 testIBH.o: benchmark.c nodavesimple.h
@@ -88,6 +96,10 @@ testMPI_IBHload: nodave.o openSocket.o testMPI_IBHload.o
 	$(CC) $(LDFLAGS) nodave.o openSocket.o testMPI_IBHload.o -o testMPI_IBHload
 testPPI: nodave.o setport.o testPPI.o
 	$(CC) $(LDFLAGS) nodave.o setport.o testPPI.o -o testPPI
+testPJO: nodave.o setport.o testPJO.o
+	$(CC) $(LDFLAGS) nodave.o setport.o testPJO.o -lpaho-mqtt3as -L /usr/local/lib -o testPJO
+#rrrnod: nodave.o setport.o rrrnod.o
+#	$(CC) $(LDFLAGS) nodave.o setport.o rrrnod.o -o rrrnode
 testPPId: nodave.o setport.o testPPI.o
 	$(CC) -lnodave testPPI.o -o testPPId	
 testISO_TCPload: nodave.o openSocket.o testISO_TCPload.o
@@ -116,21 +128,24 @@ testHTTP: nodave.o openSocket.o testHTTP.o
 	$(CC) $(LDFLAGS) nodave.o openSocket.o testHTTP.o -o testHTTP
 ibhsim9.o: simProperties2.c blocklist.h
 ibhsim9: ibhsim9.o nodave.h nodave.o openSocket.o openSocket.h blocklist.o blocklist2.o setport.o
-	$(CC) -pthread ibhsim9.o openSocket.o nodave.o blocklist.o blocklist2.o setport.o -o ibhsim9
+	$(CC) -lpthread ibhsim9.o openSocket.o nodave.o blocklist.o blocklist2.o setport.o -o ibhsim9
 ibhsim10.o: simProperties2.c blocklist.h
 ibhsim10: ibhsim10.o nodave.h nodave.o openSocket.o openSocket.h blocklist.o blocklist2.o setport.o emulator.o
-	$(CC) -lm -pthread ibhsim10.o openSocket.o nodave.o blocklist.o blocklist2.o setport.o emulator.o -o ibhsim10
+	$(CC) -lm -lpthread ibhsim10.o openSocket.o nodave.o blocklist.o blocklist2.o setport.o emulator.o -o ibhsim10
 
 
 
 libnodave.so: nodave.o setport.o openSocket.o
 	$(LD) -shared nodave.o setport.o openSocket.o -o libnodave.so	
 
+#
+# for some reason, -lpthread now has to be at the end of the linker command line...05/17/2013
+#
 ibhsim5.o: simProperties.c
 ibhsim5: ibhsim5.o nodave.h nodave.o openSocket.o openSocket.h
-	$(CC) -pthread ibhsim5.o openSocket.o nodave.o -o ibhsim5
+	$(CC) ibhsim5.o openSocket.o nodave.o -lpthread  -o ibhsim5
 isotest4: isotest4.o openSocket.o nodave.o nodave.h
-	$(CC) $(LDFLAGS) -pthread isotest4.o openSocket.o nodave.o $(LIB) -o isotest4
+	$(CC) $(LDFLAGS) isotest4.o openSocket.o nodave.o $(LIB)  -lpthread  -o isotest4
 
 clean: 
 	rm -f $(DYNAMIC_PROGRAMS)

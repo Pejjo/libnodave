@@ -6,7 +6,7 @@ uses nodave
 , windows
 {$endif}
 {$ifdef LINUX}
-,oldlinux
+ ,oldlinux
 {$define UNIX_STYLE}
 {$endif}
 ;
@@ -17,6 +17,7 @@ procedure writeBench(dc:pdaveConnection);
 procedure wait;
 
 implementation
+
 
 procedure wait;
 begin
